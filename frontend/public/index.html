@@ -447,26 +447,5 @@
 </div>
 
 <script src="/js/app.js"></script>
-<script>
-  // Data de hoje no header
-  const hoje = new Date();
-  const opts = { weekday: 'long', day: 'numeric', month: 'long' };
-  const dataEl = document.getElementById('data-hoje');
-  if (dataEl) dataEl.textContent = hoje.toLocaleDateString('pt-BR', opts);
-
-  // Copiar mensagem WhatsApp
-  function copiarMensagem() {
-    const msg = `Boa tarde, [Nome]! Tudo bem?\n\nSou Emanuel, da Ebal Outdoor aqui de Sergipe.\n\nTrabalhamos com painéis ao longo da rodovia que liga o sul do estado a Aracaju. Quem passa por ali vai direto para a capital — trabalhadores, comerciantes, famílias que frequentam Aracaju todo dia.\n\nA mídia outdoor é a 3ª mais notada pelos brasileiros e gera R$5,97 de retorno para cada R$1 investido.\n\nAcredito que faz muito sentido para a [empresa]. Posso te mostrar os pontos disponíveis e os valores?`;
-    navigator.clipboard.writeText(msg).then(() => toast('Mensagem copiada!'));
-  }
-
-  // Oculta FAB na página de argumentos
-  const origNavTo = navTo;
-  function navTo(pg) {
-    origNavTo(pg);
-    const fab = document.getElementById('fab-btn');
-    if (fab) fab.style.display = (pg === 'argumentos' || pg === 'dashboard') ? 'none' : 'flex';
-  }
-</script>
 </body>
 </html>
