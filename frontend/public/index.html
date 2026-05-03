@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#0d0d0d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="description" content="Sistema de gestão Ebal Outdoor - Sergipe">
+  <title>Ebal Outdoor</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<header class="topbar">
+  <div class="topbar-logo">EBAL</div>
+  <div class="topbar-sub">Outdoor · Sergipe</div>
+</header>
+
+<!-- ── SIDEBAR (desktop) ── -->
+<nav class="sidebar">
+  <button class="sidebar-item active" data-page="dashboard" onclick="navTo('dashboard')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Painel
+  </button>
+  <button class="sidebar-item" data-page="placas" onclick="navTo('placas')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="8" y1="5" x2="8" y2="19"/></svg>
+    Placas
+  </button>
+  <button class="sidebar-item" data-page="contratos" onclick="navTo('contratos')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+    Contratos
+  </button>
+  <button class="sidebar-item" data-page="leads" onclick="navTo('leads')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Prospecção
+  </button>
+  <button class="sidebar-item" data-page="argumentos" onclick="navTo('argumentos')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    Argumentos
+  </button>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- DASHBOARD -->
+  <section class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div class="page-title">Painel</div>
+      <span id="data-hoje" style="font-size:13px;color:#888"></span>
+    </div>
+
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-label">Placas ocupadas</div>
+        <div class="metric-value verde" id="m-ocupadas">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Placas livres</div>
+        <div class="metric-value vermelho" id="m-livres">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Vencendo em 30d</div>
+        <div class="metric-value laranja" id="m-vencendo">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Receita mensal</div>
+        <div class="metric-value azul" id="m-receita" style="font-size:24px">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Ocupação das placas</div>
+        <span style="font-size:13px;font-weight:600;color:#2d8a4e" id="taxa-ocup">—</span>
+      </div>
+      <div class="card-body">
+        <div class="ocup-bar" id="ocup-bar"></div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:#888">
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#2d8a4e;margin-right:4px"></span>Ocupada</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#c0392b;margin-right:4px"></span>Livre</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#d4691e;margin-right:4px"></span>Vencendo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚠️ Alertas de vencimento</div>
+      </div>
+      <div class="card-body" id="alertas">
+        <div class="loading"><div class="spinner"></div>Carregando...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🎯 Leads ativos</div>
+        <button class="btn btn-ghost btn-sm" onclick="navTo('leads')">Ver todos →</button>
+      </div>
+      <div class="item-list" id="leads-recentes">
+        <div class="loading"><div class="spinner"></div>Carregando...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLACAS -->
+  <section class="page" id="page-placas">
+    <div class="page-header">
+      <div class="page-title">Placas</div>
+      <button class="btn btn-preto" onclick="abrirModalPlaca()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nova placa
+      </button>
+    </div>
+    <div class="card">
+      <div class="item-list" id="lista-placas">
+        <div class="loading"><div class="spinner"></div>Carregando...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTRATOS -->
+  <section class="page" id="page-contratos">
+    <div class="page-header">
+      <div class="page-title">Contratos</div>
+      <button class="btn btn-preto" onclick="abrirModalContrato()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Novo contrato
+      </button>
+    </div>
+    <div class="card">
+      <div class="item-list" id="lista-contratos">
+        <div class="loading"><div class="spinner"></div>Carregando...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEADS -->
+  <section class="page" id="page-leads">
+    <div class="page-header">
+      <div class="page-title">Prospecção</div>
+      <button class="btn btn-preto" onclick="abrirModalLead()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Novo lead
+      </button>
+    </div>
+    <div class="card">
+      <div class="item-list" id="lista-leads">
+        <div class="loading"><div class="spinner"></div>Carregando...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARGUMENTOS DE VENDA -->
+  <section class="page" id="page-argumentos">
+    <div class="page-header">
+      <div class="page-title">Argumentos</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">📊 Dados do documento Ebal</div></div>
+      <div class="card-body">
+        <div class="stat-destaque">
+          <div class="stat-d"><div class="stat-d-num">3ª</div><div class="stat-d-label">Mídia mais notada pelos brasileiros</div></div>
+          <div class="stat-d"><div class="stat-d-num">R$5,97</div><div class="stat-d-label">Retorno para cada R$1 investido (Forbes)</div></div>
+          <div class="stat-d"><div class="stat-d-num">+275%</div><div class="stat-d-label">Aumento na fidelidade do cliente</div></div>
+          <div class="stat-d"><div class="stat-d-num">+80%</div><div class="stat-d-label">Eficácia da publicidade</div></div>
+        </div>
+        <p style="font-size:12px;color:#888;line-height:1.6">48% das marcas globais usam OOH para construção de marca · 28% para melhora de margens de vendas · 24% para ambas (Estudo Rapport)</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">💬 Respostas a objeções</div></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+        <div class="arg-card">
+          <div class="arg-pergunta">"Outdoor é muito caro"</div>
+          <div class="arg-resposta">O outdoor funciona 24h por dia, 7 dias por semana — sem pausas. De acordo com a Forbes, cada R$1 investido gera R$5,97 de retorno. É um dos ROIs mais altos do mercado. Posso te mostrar uma simulação?</div>
+        </div>
+        <div class="arg-card">
+          <div class="arg-pergunta">"Não sei se tem retorno"</div>
+          <div class="arg-resposta">Por isso oferecemos contratos a partir de 1 mês. Você testa sem compromisso longo. Se funcionar — e geralmente funciona — você renova. Simples assim.</div>
+        </div>
+        <div class="arg-card">
+          <div class="arg-pergunta">"Já anuncio no digital"</div>
+          <div class="arg-resposta">Digital e outdoor se complementam: o outdoor aumenta em 80% a eficácia do digital (estudo Rapport). Quem vê sua marca na placa já chega ao Instagram com familiaridade — converte mais fácil.</div>
+        </div>
+        <div class="arg-card">
+          <div class="arg-pergunta">"Por que essa rodovia?"</div>
+          <div class="arg-resposta">Essa rodovia é o caminho de quem vem do sul de Sergipe para Aracaju — trabalhadores, comerciantes, famílias. São pessoas que frequentam a capital regularmente e já estão atentas a referências de marca.</div>
+        </div>
+        <div class="arg-card">
+          <div class="arg-pergunta">"Não tenho arte"</div>
+          <div class="arg-resposta">Sem problema! Indicamos um designer que faz artes para outdoor rapidinho. A gente cuida da instalação e de todo o resto. Você só precisa aprovar a arte.</div>
+        </div>
+        <div class="arg-card">
+          <div class="arg-pergunta">"Vou pensar"</div>
+          <div class="arg-resposta">Claro, sem pressão. Para facilitar: posso enviar a proposta por escrito com os dados exatos da placa, o fluxo estimado da rodovia e o valor. Assim você decide com mais informação na mão.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">📱 Modelo de mensagem WhatsApp</div></div>
+      <div class="card-body">
+        <div style="background:#eef9f2;border-radius:10px;padding:16px;font-size:14px;line-height:1.8;color:#1a1a1a;border:1px solid #cce8d9">
+          Boa tarde, [Nome]! Tudo bem?<br><br>
+          Sou Emanuel, da <strong>Ebal Outdoor</strong> aqui de Sergipe.<br><br>
+          Trabalhamos com painéis ao longo da rodovia que liga o sul do estado a Aracaju. Quem passa por ali vai direto para a capital — trabalhadores, comerciantes, famílias que frequentam Aracaju todo dia.<br><br>
+          A mídia outdoor é a 3ª mais notada pelos brasileiros e gera R$5,97 de retorno para cada R$1 investido.<br><br>
+          Acredito que faz muito sentido para a [empresa]. Posso te mostrar os pontos disponíveis e os valores?
+        </div>
+        <button class="btn btn-outline btn-full mt-16" onclick="copiarMensagem()">📋 Copiar mensagem</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">🏢 Segmentos prioritários</div></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eee;font-size:14px"><span style="font-size:18px">🚗</span><div><strong>Concessionárias e revendas</strong><br><span style="color:#888;font-size:12px">Quem está na rodovia já pensa em automóvel</span></div></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eee;font-size:14px"><span style="font-size:18px">🏥</span><div><strong>Clínicas e planos de saúde</strong><br><span style="color:#888;font-size:12px">Interior busca referência médica em Aracaju</span></div></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eee;font-size:14px"><span style="font-size:18px">🎓</span><div><strong>Faculdades e cursos técnicos</strong><br><span style="color:#888;font-size:12px">Jovens do sul do estado estudam em Aracaju</span></div></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eee;font-size:14px"><span style="font-size:18px">🏠</span><div><strong>Construtoras e imobiliárias</strong><br><span style="color:#888;font-size:12px">Público em movimento, atento a oportunidades</span></div></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eee;font-size:14px"><span style="font-size:18px">🛒</span><div><strong>Supermercados e atacados</strong><br><span style="color:#888;font-size:12px">Comerciantes que abastecem em Aracaju</span></div></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;font-size:14px"><span style="font-size:18px">🛡️</span><div><strong>Seguros e financeiras</strong><br><span style="color:#888;font-size:12px">Público em trânsito, perfil ideal para proteção</span></div></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── BOTTOM NAV (mobile) ── -->
+<nav class="bottom-nav">
+  <button class="bnav-item active" data-page="dashboard" onclick="navTo('dashboard')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Painel
+  </button>
+  <button class="bnav-item" data-page="placas" onclick="navTo('placas')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="8" y1="5" x2="8" y2="19"/></svg>
+    Placas
+  </button>
+  <button class="bnav-item" data-page="contratos" onclick="navTo('contratos')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    Contratos
+  </button>
+  <button class="bnav-item" data-page="leads" onclick="navTo('leads')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Leads
+  </button>
+  <button class="bnav-item" data-page="argumentos" onclick="navTo('argumentos')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    Venda
+  </button>
+</nav>
+
+<!-- ── FAB ── -->
+<button class="btn-fab" onclick="fabAction()" id="fab-btn" title="Adicionar">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<!-- ── TOAST ── -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ── MODAL: PLACA ── -->
+<div class="modal-overlay" id="modal-placa">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-placa-title">Nova Placa</div>
+    <input type="hidden" id="fp-id">
+    <div class="form-grid form-grid-2">
+      <div class="form-group">
+        <label>Código *</label>
+        <input id="fp-codigo" placeholder="Ex: EB-07" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Valor mensal (R$)</label>
+        <input id="fp-valor" type="number" placeholder="800" inputmode="decimal">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Localização</label>
+        <input id="fp-localizacao" placeholder="Rodovia SE-100, sentido Aracaju">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Referência / KM</label>
+        <input id="fp-referencia" placeholder="KM 7 – Próx. Posto Shell">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="fp-status">
+          <option>Livre</option>
+          <option>Ocupada</option>
+          <option>Vencendo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Anunciante atual</label>
+        <input id="fp-anunciante" placeholder="Nome da empresa">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Observações</label>
+        <textarea id="fp-obs" placeholder="Anotações sobre a placa..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-placa')">Cancelar</button>
+      <button class="btn btn-amarelo" onclick="salvarPlaca()" style="flex:1">Salvar placa</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: CONTRATO ── -->
+<div class="modal-overlay" id="modal-contrato">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-contrato-title">Novo Contrato</div>
+    <input type="hidden" id="fc-id">
+    <div class="form-grid form-grid-2">
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Placa *</label>
+        <select id="fc-placa"></select>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Empresa anunciante *</label>
+        <input id="fc-empresa" placeholder="Nome da empresa de Aracaju">
+      </div>
+      <div class="form-group">
+        <label>Cidade da empresa</label>
+        <input id="fc-cidade" placeholder="Aracaju" value="Aracaju">
+      </div>
+      <div class="form-group">
+        <label>Valor mensal (R$) *</label>
+        <input id="fc-valor" type="number" placeholder="800" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label>Nome do contato</label>
+        <input id="fc-contato-nome" placeholder="Nome do responsável">
+      </div>
+      <div class="form-group">
+        <label>WhatsApp do contato</label>
+        <input id="fc-contato-tel" placeholder="(79) 9 9999-9999" inputmode="tel">
+      </div>
+      <div class="form-group">
+        <label>Início *</label>
+        <input id="fc-inicio" type="date">
+      </div>
+      <div class="form-group">
+        <label>Vencimento *</label>
+        <input id="fc-venc" type="date">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Observações</label>
+        <textarea id="fc-obs" placeholder="Condições especiais, observações..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-contrato')">Cancelar</button>
+      <button class="btn btn-amarelo" onclick="salvarContrato()" style="flex:1">Salvar contrato</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: LEAD ── -->
+<div class="modal-overlay" id="modal-lead">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-lead-title">Novo Lead</div>
+    <input type="hidden" id="fl-id">
+    <div class="form-grid form-grid-2">
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Empresa *</label>
+        <input id="fl-empresa" placeholder="Nome da empresa">
+      </div>
+      <div class="form-group">
+        <label>Segmento</label>
+        <select id="fl-segmento">
+          <option value="">— Selecione —</option>
+          <option>Concessionária</option>
+          <option>Clínica / Saúde</option>
+          <option>Plano de saúde</option>
+          <option>Faculdade</option>
+          <option>Construtora / Imobiliária</option>
+          <option>Supermercado / Atacado</option>
+          <option>Seguros / Financeira</option>
+          <option>Varejo</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Cidade</label>
+        <input id="fl-cidade" placeholder="Aracaju" value="Aracaju">
+      </div>
+      <div class="form-group">
+        <label>Nome do contato</label>
+        <input id="fl-contato-nome" placeholder="Nome do responsável">
+      </div>
+      <div class="form-group">
+        <label>WhatsApp</label>
+        <input id="fl-contato-tel" placeholder="(79) 9 9999-9999" inputmode="tel">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="fl-status">
+          <option>Em contato</option>
+          <option>Proposta enviada</option>
+          <option>Negociando</option>
+          <option>Fechado</option>
+          <option>Perdido</option>
+        </select>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Placa que está oferecendo</label>
+        <select id="fl-placa"></select>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Próxima ação</label>
+        <input id="fl-acao" placeholder="Ex: Ligar segunda-feira para fechar valor">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Observações</label>
+        <textarea id="fl-obs" placeholder="Anotações sobre o lead..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-lead')">Cancelar</button>
+      <button class="btn btn-amarelo" onclick="salvarLead()" style="flex:1">Salvar lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: CONFIRMAR DELEÇÃO ── -->
+<div class="modal-overlay" id="modal-confirmar">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Confirmar remoção</div>
+    <p style="font-size:15px;color:#555;line-height:1.6">
+      Tem certeza que deseja remover <strong id="confirmar-nome"></strong>?<br>
+      <span style="font-size:13px;color:#c0392b">Esta ação não pode ser desfeita.</span>
+    </p>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-confirmar')" style="flex:1">Cancelar</button>
+      <button class="btn btn-danger" onclick="executarDeletar()" style="flex:1">Remover</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  // Data de hoje no header
+  const hoje = new Date();
+  const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+  const dataEl = document.getElementById('data-hoje');
+  if (dataEl) dataEl.textContent = hoje.toLocaleDateString('pt-BR', opts);
+
+  // Copiar mensagem WhatsApp
+  function copiarMensagem() {
+    const msg = `Boa tarde, [Nome]! Tudo bem?\n\nSou Emanuel, da Ebal Outdoor aqui de Sergipe.\n\nTrabalhamos com painéis ao longo da rodovia que liga o sul do estado a Aracaju. Quem passa por ali vai direto para a capital — trabalhadores, comerciantes, famílias que frequentam Aracaju todo dia.\n\nA mídia outdoor é a 3ª mais notada pelos brasileiros e gera R$5,97 de retorno para cada R$1 investido.\n\nAcredito que faz muito sentido para a [empresa]. Posso te mostrar os pontos disponíveis e os valores?`;
+    navigator.clipboard.writeText(msg).then(() => toast('Mensagem copiada!'));
+  }
+
+  // Oculta FAB na página de argumentos
+  const origNavTo = navTo;
+  function navTo(pg) {
+    origNavTo(pg);
+    const fab = document.getElementById('fab-btn');
+    if (fab) fab.style.display = (pg === 'argumentos' || pg === 'dashboard') ? 'none' : 'flex';
+  }
+</script>
+</body>
+</html>
